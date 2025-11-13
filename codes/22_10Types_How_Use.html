@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark"> <!-- 기본을 다크 모드로 설정 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네오스트림 영상 리뷰 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 아이콘 라이브러리 (Heroicons) -->
+    <script type="module" src="https://unpkg.com/heroicons@2.1.3/24/outline/index.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Pretendard', sans-serif;
+        }
+
+        /* 스크롤바 스타일링 (다크 모드에 어울리게) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* dark:bg-gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* dark:bg-gray-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* dark:bg-gray-500 */
+        }
+
+        /* 간단한 토스트 알림 스타일 */
+        #toast-notification {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+    </style>
+
+    <script>
+        // Tailwind CSS 다크 모드 설정
+        tailwind.config = {
+            darkMode: 'class', // 'media' 또는 'class'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Pretendard', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex overflow-hidden">
+
+    <!-- 1. 사이드바 (네비게이션) -->
+    <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg flex-shrink-0 flex flex-col h-screen">
+        <div class="flex items-center justify-center h-20 border-b border-gray-200 dark:border-gray-700">
+            <h1 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">NeoStream</h1>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="#" class="flex items-center px-4 py-3 bg-indigo-100 dark:bg-indigo-700 text-indigo-700 dark:text-white rounded-lg font-medium">
+                <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                검토 대기열
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                승인 완료
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                반려 목록
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 9.75 19.875V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+                통계 (임원용)
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center">
+                <img class="w-10 h-10 rounded-full" src="https://placehold.co/100x100/667eea/white?text=편집팀" alt="Profile">
+                <div class="ml-3">
+                    <p class="text-sm font-medium">김 편집장 (팀 A)</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Online</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. 메인 콘텐츠 -->
+    <main class="flex-1 h-screen overflow-y-auto">
+        <!-- 메인 헤더 -->
+        <header class="sticky top-0 z-10 flex items-center justify-between h-20 px-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-2xl font-semibold">검토 대기열 (12)</h2>
+            <div class="flex items-center space-x-4">
+                <button id="dark-mode-toggle" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <!-- 아이콘은 JS로 토글 -->
+                    <svg id="sun-icon" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-.386 1.591-1.591M3 12H.75m.386-6.364 1.591 1.591" /></svg>
+                    <svg id="moon-icon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+                </button>
+                <button class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- 데이터 밀집형 테이블 -->
+        <div class="p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">상태</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">영상 제목 (ID)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">담당 기자</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">업로드 시간</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">리스크</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">검토</th>
+                        </tr>
+                    </thead>
+                    <tbody id="video-queue-table" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- JS로 데이터가 채워집니다 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. 리뷰 모달 -->
+    <div id="review-modal" class="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center p-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col">
+            <!-- 모달 헤더 -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 id="modal-title" class="text-xl font-semibold">영상 리뷰 및 편집</h3>
+                <button id="close-modal-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <!-- 모달 본문 (플레이어 + 편집 / 댓글) -->
+            <div class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden">
+                
+                <!-- 왼쪽 영역: 플레이어 및 편집 -->
+                <div class="lg:col-span-2 flex flex-col h-full">
+                    <!-- 영상 플레이어 영역 -->
+                    <div class="bg-black rounded-lg overflow-hidden mb-4">
+                        <video id="video-player" class="w-full max-h-[400px]" controls>
+                            <!-- 비디오 소스는 JS로 설정됩니다 -->
+                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    
+                    <!-- 메타데이터 편집 영역 -->
+                    <div class="flex-1 overflow-y-auto pr-2">
+                        <h4 class="text-lg font-semibold mb-3">메타데이터 편집</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="video-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">영상 제목</label>
+                                <input type="text" id="video-title" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label for="video-caption" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">기사 텍스트 / 자막</label>
+                                <textarea id="video-caption" rows="8" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="영상에 사용될 기사 텍스트나 주요 자막을 입력하세요..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 오른쪽 영역: 타임스탬프 댓글 -->
+                <div class="lg:col-span-1 flex flex-col h-full border-l border-gray-200 dark:border-gray-700 pl-6">
+                    <h4 class="text-lg font-semibold mb-4">리뷰 코멘트</h4>
+                    
+                    <!-- 댓글 목록 -->
+                    <div id="comment-list" class="flex-1 space-y-4 overflow-y-auto mb-4 pr-2">
+                        <!-- 샘플 댓글 -->
+                        <div class="flex items-start">
+                            <img class="w-8 h-8 rounded-full mr-3" src="https://placehold.co/100x100/ec4899/white?text=편집A" alt="Profile">
+                            <div class="flex-1 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                                <p class="text-sm font-medium">박 편집장</p>
+                                <p class="text-sm mt-1">
+                                    <span class="font-bold text-indigo-500 dark:text-indigo-400">[00:15]</span> 
+                                    이 부분 오디오가 약간 튑니다. 확인 필요.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <img class="w-8 h-8 rounded-full mr-3" src="https://placehold.co/100x100/8b5cf6/white?text=편집B" alt="Profile">
+                            <div class="flex-1 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                                <p class="text-sm font-medium">최 편집자</p>
+                                <p class="text-sm mt-1">
+                                    <span class="font-bold text-indigo-500 dark:text-indigo-400">[01:03]</span> 
+                                    자막 오타 수정했습니다. (정치인 -> 정책)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 새 댓글 폼 -->
+                    <form id="comment-form" class="mt-auto">
+                        <textarea id="comment-text" rows="3" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="리뷰 코멘트를 입력하세요..."></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            <button type="button" id="add-timestamp-btn" class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+                                + 타임스탬프 추가
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                                등록
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 모달 푸터 (승인/반려) -->
+            <div class="flex justify-end items-center p-5 border-t border-gray-200 dark:border-gray-700 space-x-4">
+                <button id="reject-btn" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                    반려 (수정 요청)
+                </button>
+                <button id="approve-btn" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                    최종 승인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림 (피드백 용) -->
+    <div id="toast-notification" class="fixed bottom-10 right-10 p-4 rounded-lg shadow-lg text-white opacity-0 transform translate-y-5">
+        <span id="toast-message"></span>
+    </div>
+
+
+    <script>
+        // --- Mock Data ---
+        const mockVideoData = [
+            { id: 'V-1001', status: 'pending', title: '[속보] 여의도 국회 앞, 대규모 집회... 교통 통제', reporter: '김기자', uploadTime: '2025-11-13 10:05:15', risk: '중', caption: '오늘 오전 10시경 여의도 국회 앞에서...' },
+            { id: 'V-1002', status: 'pending', title: '증시 마감 브리핑, 코스피 2800선 회복', reporter: '이코노미', uploadTime: '2025-11-13 09:55:30', risk: '하', caption: '금일 코스피 지수가...' },
+            { id: 'V-1003', status: 'pending', title: '긴급) 판교 데이터센터 화재 발생... 원인 불명', reporter: '박사회', uploadTime: '2025-11-13 09:40:02', risk: '상', caption: '오늘 오전 9시 30분경 판교 데이터센터에서...' },
+            { id: 'V-1004', status: 'edited', title: '주말 날씨 예보, 전국 대체로 맑음', reporter: '날씨팀', uploadTime: '2025-11-13 09:30:11', risk: '하', caption: '기상청에 따르면 이번 주말은...'},
+            { id: 'V-1005', status: 'pending', title: '[단독] 유명 연예인 A씨, 탈세 의혹 포착', reporter: '연예부', uploadTime: '2025-11-13 09:25:45', risk: '상', caption: '본지 취재 결과...'},
+        ];
+
+        // --- DOM Elements ---
+        let tableBody, modal, closeModalBtn, videoPlayer, videoTitleInput, videoCaptionInput, commentForm, commentList, addTimestampBtn, darkModeToggle;
+        let sunIcon, moonIcon, approveBtn, rejectBtn;
+
+        // --- Helper Functions ---
+        
+        /**
+         * 상태에 따른 뱃지 스타일을 반환합니다.
+         */
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'pending':
+                    return '<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100">검토 대기</span>';
+                case 'edited':
+                    return '<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100">수정됨</span>';
+                default:
+                    return '';
+            }
+        }
+
+        /**
+         * 리스크 레벨에 따른 텍스트 스타일을 반환합니다.
+         */
+        function getRiskClass(risk) {
+            switch (risk) {
+                case '상':
+                    return 'text-red-500 font-bold';
+                case '중':
+                    return 'text-yellow-500 font-medium';
+                default:
+                    return 'text-green-500';
+            }
+        }
+
+        /**
+         * 초를 MM:SS 형식의 문자열로 변환합니다.
+         */
+        function formatTime(totalSeconds) {
+            const seconds = Math.floor(totalSeconds % 60);
+            const minutes = Math.floor(totalSeconds / 60);
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        /**
+         * 토스트 알림을 표시합니다.
+         */
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const messageEl = document.getElementById('toast-message');
+            
+            messageEl.textContent = message;
+            toast.className = 'fixed bottom-10 right-10 p-4 rounded-lg shadow-lg text-white opacity-0 transform translate-y-5'; // 초기화
+            
+            if (type === 'success') {
+                toast.classList.add('bg-green-600');
+            } else if (type === 'error') {
+                toast.classList.add('bg-red-600');
+            } else {
+                toast.classList.add('bg-blue-600');
+            }
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-5');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            }, 100);
+
+            // Animate out
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-5');
+            }, 3000);
+        }
+
+        // --- Core Logic ---
+
+        /**
+         * Mock 데이터를 기반으로 테이블을 채웁니다.
+         */
+        function populateTable() {
+            tableBody.innerHTML = '';
+            mockVideoData.forEach(video => {
+                const row = `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">${getStatusBadge(video.status)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium">${video.title}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">${video.id}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">${video.reporter}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${video.uploadTime}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${getRiskClass(video.risk)}">${video.risk}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="open-review-btn text-indigo-600 dark:text-indigo-400 hover:text-indigo-900" data-video-id="${video.id}">
+                                검토하기
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        /**
+         * 모달을 열고 비디오 데이터를 로드합니다.
+         */
+        function openModal(videoId) {
+            const video = mockVideoData.find(v => v.id === videoId);
+            if (!video) return;
+
+            document.getElementById('modal-title').textContent = `[${video.id}] ${video.title}`;
+            videoTitleInput.value = video.title;
+            videoCaptionInput.value = video.caption;
+            
+            // TODO: 실제로는 video.videoUrl 등으로 비디오 소스를 변경해야 합니다.
+            // videoPlayer.src = video.videoUrl; 
+            videoPlayer.load(); // 새 소스 로드
+
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * 모달을 닫습니다.
+         */
+        function closeModal() {
+            videoPlayer.pause();
+            modal.classList.add('hidden');
+        }
+
+        /**
+         * 타임스탬프를 댓글 입력창에 추가합니다.
+         */
+        function addTimestamp(e) {
+            e.preventDefault();
+            const currentTime = formatTime(videoPlayer.currentTime);
+            const commentText = document.getElementById('comment-text');
+            commentText.value = `[${currentTime}] ${commentText.value}`;
+            commentText.focus();
+        }
+
+        /**
+         * 새 댓글을 등록합니다.
+         */
+        function submitComment(e) {
+            e.preventDefault();
+            const commentTextEl = document.getElementById('comment-text');
+            const text = commentTextEl.value.trim();
+
+            if (!text) return;
+
+            const newComment = `
+                <div class="flex items-start">
+                    <img class="w-8 h-8 rounded-full mr-3" src="https://placehold.co/100x100/667eea/white?text=편집팀" alt="Profile">
+                    <div class="flex-1 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                        <p class="text-sm font-medium">김 편집장 (나)</p>
+                        <p class="text-sm mt-1">${text.replace(/\[(\d{2}:\d{2})\]/g, '<span class="font-bold text-indigo-500 dark:text-indigo-400">[$1]</span>')}</p>
+                    </div>
+                </div>
+            `;
+            commentList.insertAdjacentHTML('beforeend', newComment);
+            commentList.scrollTop = commentList.scrollHeight; // 스크롤을 맨 아래로
+            commentTextEl.value = '';
+        }
+
+        /**
+         * 다크/라이트 모드를 토글합니다.
+         */
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            sunIcon.classList.toggle('hidden', isDark);
+            moonIcon.classList.toggle('hidden', !isDark);
+        }
+
+        /**
+         * 이벤트 리스너를 초기화합니다.
+         */
+        function initEventListeners() {
+            // 다크 모드 토글
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+
+            // 모달 닫기
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(); // 배경 클릭 시 닫기
+            });
+
+            // 모달 열기 (이벤트 위임)
+            tableBody.addEventListener('click', (e) => {
+                if (e.target.classList.contains('open-review-btn')) {
+                    openModal(e.target.dataset.videoId);
+                }
+            });
+
+            // 타임스탬프 추가
+            addTimestampBtn.addEventListener('click', addTimestamp);
+
+            // 댓글 등록
+            commentForm.addEventListener('submit', submitComment);
+
+            // 승인/반려
+            approveBtn.addEventListener('click', () => {
+                showToast('영상이 최종 승인되었습니다.', 'success');
+                closeModal();
+                // TODO: 실제 API 호출 (예: updateVideoStatus(videoId, 'approved'))
+            });
+
+            rejectBtn.addEventListener('click', () => {
+                showToast('영상에 반려(수정 요청) 의견이 등록되었습니다.', 'error');
+                closeModal();
+                // TODO: 실제 API 호출 (예: updateVideoStatus(videoId, 'rejected'))
+            });
+        }
+
+        // --- DOMContentLoaded ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM 요소 바인딩
+            tableBody = document.getElementById('video-queue-table');
+            modal = document.getElementById('review-modal');
+            closeModalBtn = document.getElementById('close-modal-btn');
+            videoPlayer = document.getElementById('video-player');
+            videoTitleInput = document.getElementById('video-title');
+            videoCaptionInput = document.getElementById('video-caption');
+            commentForm = document.getElementById('comment-form');
+            commentList = document.getElementById('comment-list');
+            addTimestampBtn = document.getElementById('add-timestamp-btn');
+            darkModeToggle = document.getElementById('dark-mode-toggle');
+            sunIcon = document.getElementById('sun-icon');
+            moonIcon = document.getElementById('moon-icon');
+            approveBtn = document.getElementById('approve-btn');
+            rejectBtn = document.getElementById('reject-btn');
+
+            // 초기화
+            if (document.documentElement.classList.contains('dark')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+            
+            populateTable();
+            initEventListeners();
+        });
+
+    </script>
+</body>
+</html>
