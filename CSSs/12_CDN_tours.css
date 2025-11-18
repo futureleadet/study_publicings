@@ -1,0 +1,75 @@
+.header {
+    background-color: cadetblue;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.menu {
+    background-color:lightgray;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.menu a {
+    background-color:darkcyan;
+    padding: 10px 20px;
+    margin: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.container {
+    background-color: gainsboro;
+    max-width: 900px;
+    margin:10px auto;
+}
+
+h2 {
+    font-style: italic;
+    text-decoration: underline;
+    border-bottom: 1px solid;
+}
+
+hr {
+    border: 1px solid;
+    margin: 1px;
+}
+
+.section {
+    background-color:azure ;
+    font-variation-settings: inherit;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.internal-links a {
+    background-color:skyblue;
+    font-display: block;
+    padding: 5px 10px;
+    margin: 10px;
+    text-decoration: none;
+    border-radius: 3px;
+    border-color: blue;
+    display: inline-block;
+}
+
+.contact-info {
+    background-color:rgb(165, 224, 241);
+    font-style: italic;
+    border-color: rgb(84, 59, 230);
+    max-width: 500px ;
+    border-style: solid;
+    padding: 3px;
+}
+
+.footer {
+    background-color: cadetblue;
+    color:white;
+    text-align:center;
+    padding: 10px;
+    margin-top:30px;
+}

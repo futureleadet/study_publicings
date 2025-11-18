@@ -1,0 +1,24 @@
+
+    div {
+      padding-top: 20px;
+      background-color: rgb(207, 214, 201);
+      text-align: left;
+    }
+
+    .first-background {
+      padding-top: 20px;
+      background-color: red;
+      text-align: left;
+    }
+
+    span {
+      padding-left: 40px;
+      background-color: rgb(138, 165, 42);
+      border :3px solid black;
+    }
+
+    #second-border {
+      padding-left: 40px;
+      background-color: rgb(138, 165, 42);
+      border :1px solid green;
+    }
